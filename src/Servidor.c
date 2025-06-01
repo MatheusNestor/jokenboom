@@ -35,6 +35,11 @@ int main(int argc, char **argv){
         logexit("socket");
     }
 
+    int enable =1;
+    if(0 != setsockopt(var_socket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int))){
+        logexit("setsockopt");
+    }
+
     struct sockaddr *addr = (struct sockaddr *)(&storage);
     if(0 != bind(var_socket, addr, sizeof(storage))){
         logexit("bind");
