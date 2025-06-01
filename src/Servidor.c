@@ -1,0 +1,77 @@
+#include "common.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+void usage(int argc, char **argv){
+    printf("usage: %s <server IP> <server port>\n",argv[0]);
+    exit(EXIT_FAILURE);
+}
+
+void logexit(const char *msg){
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
+
+#define BUFSZ 1024
+
+int main(int argc, char **argv){
+    if (argc < 3){
+        usage(argc,argv);
+    }
+
+    struct sockaddr_storage storage;
+    if(0 != server_sockaddr_init(argv[1], argv[2], &storage)){
+        usage(argc, argv);
+    }
+
+    int var_socket;
+    var_socket = socket(storage.ss_family, SOCK_STREAM, 0);
+    if(var_socket == -1){
+        logexit("socket");
+    }
+
+    struct sockaddr *addr = (struct sockaddr *)(&storage);
+    if(0 != bind(var_socket, addr, sizeof(storage))){
+        logexit("bind");
+    }
+
+    if(0 != listen(var_socket, 10)){
+        logexit("listen")
+    }
+
+    char addrstr[BUFSZ];
+    addrtostr(addr, addrstr, BUFSZ);
+    printf("bound to %s, waiting connections\n", addrstr);
+
+    while(1){
+        struct sockaddr_storage cstorage;
+        struct sockaddr *caddr =(struct sockaddr *)(&cstorage);
+        socklen_t caddrlen = sizeof(cstorage)
+
+        int csock = accept(var_socket, cadrr, &caddrlen);
+        if (csock == -1){
+            logexit("accept");
+        }
+        char caddrstr[BUFSZ];
+        addrtostr(caddr, caddrstr, BUFSZ);
+        printf("[log] conncection from %s\n", caddrstr);
+
+        char buf[BUFSZ];
+        memset(buf, 0, BUFSZ)
+        size_t count = recv(csock, buf, BUFSZ, 0);
+        printf("[msg] %s, %d bytes: %s\n", caddrstr, (int)count, buf);
+
+        sprint(buf, "remote endpoint: %.1000s\n", caddrstr);
+        count = send(csock, buf, strlen(buf)+1, 0);
+        if (count != strlen(buf)+1){
+            logexit("send");
+        }
+        close(csock);
+    }
+    exit(EXIT_SUCCESS);
+}
