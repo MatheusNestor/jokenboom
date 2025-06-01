@@ -24,7 +24,7 @@ int addrparse( const char *addrstr, const char *portstr, struct sockaddr_storage
         return 0;
     }
 
-    struct in_addr inaddr6;
+    struct in6_addr inaddr6;
     if(inet_pton(AF_INET6, addrstr, &inaddr6)){
         struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)storage;
         addr6 -> sin6_family = AF_INET6;
@@ -50,7 +50,7 @@ void addrtostr(const struct sockaddr *addr, char *str, size_t strsize){
         port = ntohs(addr4->sin_port);
     }else if (addr -> sa_family == AF_INET6){
         version = 6;
-        struct sockaddr_in6 *addr6 = (struct sockaddr_in *)addr;
+        struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)addr;
         if (!inet_ntop(AF_INET6, &(addr6 -> sin6_addr), addrstr, INET6_ADDRSTRLEN +1)){
             logexit("ntop");
         }
@@ -78,7 +78,7 @@ int server_sockaddr_init(const char *proto, const char *portstr, struct sockaddr
         addr4 -> sin_port = port;
         return 0;
     }else if (0 == strcmp(proto, "v6")){
-        struct sockaddr_in6 *addr6 = (struct sockaddr_in *)storage;        
+        struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)storage;        
         addr6 -> sin6_family = AF_INET6;
         addr6 -> sin6_addr = in6addr_any;        
         addr6 -> sin6_port = port;
