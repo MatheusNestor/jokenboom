@@ -1,5 +1,7 @@
-all:
+INCLUDE  = include
 
-gcc -wall -c common.c
-gcc -wall client.c common.o -o client
-gcc -wall server.c common.o -o server
+all:
+	gcc -c ../src/Common.c
+	gcc ../src/Cliente.c Common.o -o client
+	gcc ../src/Servidor.c Common.o -o server
+

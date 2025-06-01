@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-int assrparse( const char *addrstr, const char *portstr, struct sockaddr_storage *storage){
+int addrparse( const char *addrstr, const char *portstr, struct sockaddr_storage *storage){
     if(addrstr == NULL || portstr == NULL){
         return -1;
     }
@@ -30,7 +30,7 @@ int assrparse( const char *addrstr, const char *portstr, struct sockaddr_storage
         addr6 -> sin6_family = AF_INET6;
         addr6 -> sin6_port = port;
 
-        memcpy(*&(addr -> sin6_addr), &inaddr6, sizeof(inaddr6));
+        memcpy(&(addr6 -> sin6_addr), &inaddr6, sizeof(inaddr6));
         return 0;
     }
     return -1;
@@ -56,10 +56,10 @@ void addrtostr(const struct sockaddr *addr, char *str, size_t strsize){
         }
         port = ntohs(addr6->sin6_port);
     }else{
-        logexit("unknown protocol family.")
+        logexit("unknown protocol family.");
     }
     if (str){
-        snprint(str, strsize, "IPv %d %s %hu", version, addrstr, port);
+        snprintf(str, strsize, "IPv %d %s %hu", version, addrstr, port);
     }
 }
 

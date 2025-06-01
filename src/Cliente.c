@@ -1,4 +1,4 @@
-#include "common.h"
+#include "../include/common.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -51,6 +51,7 @@ int main(int argc, char **argv){
     char buf[BUFSZ];
     memset(buf, 0, BUFSZ);
     printf("mensagem> ");
+    fgets(buf, BUFSZ-1,stdin);
     size_t count = send(var_socket, buf, strlen(buf)+1, 0);
     if (count != strlen(buf)+1){
         logexit("send");

@@ -1,4 +1,4 @@
-#include "common.h"
+#include "../include/common.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,7 +41,7 @@ int main(int argc, char **argv){
     }
 
     if(0 != listen(var_socket, 10)){
-        logexit("listen")
+        logexit("listen");
     }
 
     char addrstr[BUFSZ];
@@ -51,9 +51,9 @@ int main(int argc, char **argv){
     while(1){
         struct sockaddr_storage cstorage;
         struct sockaddr *caddr =(struct sockaddr *)(&cstorage);
-        socklen_t caddrlen = sizeof(cstorage)
+        socklen_t caddrlen = sizeof(cstorage);
 
-        int csock = accept(var_socket, cadrr, &caddrlen);
+        int csock = accept(var_socket, caddr, &caddrlen);
         if (csock == -1){
             logexit("accept");
         }
@@ -62,11 +62,11 @@ int main(int argc, char **argv){
         printf("[log] conncection from %s\n", caddrstr);
 
         char buf[BUFSZ];
-        memset(buf, 0, BUFSZ)
-        size_t count = recv(csock, buf, BUFSZ, 0);
+        memset(buf, 0, BUFSZ);
+        size_t count = recv(csock, buf, BUFSZ - 1, 0);
         printf("[msg] %s, %d bytes: %s\n", caddrstr, (int)count, buf);
 
-        sprint(buf, "remote endpoint: %.1000s\n", caddrstr);
+        sprintf(buf, "remote endpoint: %.1000s\n", caddrstr);
         count = send(csock, buf, strlen(buf)+1, 0);
         if (count != strlen(buf)+1){
             logexit("send");
