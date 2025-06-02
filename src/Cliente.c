@@ -1,4 +1,5 @@
 #include "../include/common.h"
+#include "../include/Mensagens.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,21 +47,24 @@ int main(int argc, char **argv){
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
 
-    printf("connected to %s\n", addrstr);
-
-    char buf[BUFSZ];
-    memset(buf, 0, BUFSZ);
-    printf("mensagem> ");
-    fgets(buf, BUFSZ-1,stdin);
+    printf("\nConectado ao servidor.\n");
+    //Primeira resposta
+    GameMessage resposta; 
+    memset(&resposta, 0, sizeof(resposta));     
+    resposta.type = MSG_RESPONSE;
+    
+    printf("\nEscolha sua jogada: \n\n0 - Nuclear Attack \n1 - Intercept Attack \n2 - Cyber Attack \n3 - Drone Strike \n4 - Bio Attack\n\n");
+ 
+    char buf[BUFSZ];    
+    fgets(buf, BUFSZ-1,stdin);   
     size_t count = send(var_socket, buf, strlen(buf)+1, 0);
     if (count != strlen(buf)+1){
         logexit("send");
     }
 
+
     memset(buf, 0, BUFSZ);
-
     unsigned total = 0;
-
     while(1){
         count = recv(var_socket, buf + total, BUFSZ - total, 0);
         if(count==0){
@@ -70,7 +74,6 @@ int main(int argc, char **argv){
     }
     close(var_socket);
 
-    printf("received %d bytes\n",total);
     puts(buf);
 
     exit(EXIT_SUCCESS);

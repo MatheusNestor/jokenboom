@@ -1,4 +1,5 @@
 #include "../include/common.h"
+#include "../include/Mensagens.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,6 +19,42 @@ void logexit(const char *msg){
 }
 
 #define BUFSZ 1024
+
+// função para verificar se a entrada é válida
+int mensagem_valida(int mensagem){
+    if (mensagem != 0 && mensagem!=1 && mensagem != 2 && mensagem!= 3 && mensagem!=4){
+        return -1;
+    }else{return 1;}
+}
+
+// para determinar quem ganhou a rodada
+int ganhador(int escolha_jogador){
+    int escolha_servidor = rand()%5;
+    if(escolha_jogador==escolha_servidor){
+        return -1;
+    }else if(escolha_jogador==0){
+        if(escolha_servidor==2 || escolha_servidor ==3){ 
+            return 1;
+        }else{return 0;}
+    }else if(escolha_jogador== 1){
+        if(escolha_servidor==0 || escolha_servidor ==4){ 
+            return 1;
+        }else{return 0;}
+    }else if(escolha_jogador== 2){
+        if(escolha_servidor==1 || escolha_servidor ==3){ 
+            return 1;
+        }else{return 0;}
+    }else if(escolha_jogador== 3){
+        if(escolha_servidor==1 || escolha_servidor ==4){ 
+            return 1;
+        }else{return 0;}
+    }else if(escolha_jogador== 4){
+        if(escolha_servidor==2 || escolha_servidor ==0){ 
+            return 1;
+        }else{return 0;}
+    }
+}
+
 
 int main(int argc, char **argv){
     if (argc < 3){
@@ -51,7 +88,7 @@ int main(int argc, char **argv){
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
-    printf("bound to %s, waiting connections\n", addrstr);
+    printf("Servidor iniciado em modo %.5s na porta %s. Aguardando conexão... \n", addrstr,argv[2]);
 
     while(1){
         struct sockaddr_storage cstorage;
@@ -64,19 +101,20 @@ int main(int argc, char **argv){
         }
         char caddrstr[BUFSZ];
         addrtostr(caddr, caddrstr, BUFSZ);
-        printf("[log] conncection from %s\n", caddrstr);
-
+         printf("\nCliente conectado.\n");   
+        
+         //Primeira requisição
+        GameMessage request; 
+        request.type = MSG_REQUEST;
+        memset(&request, 0, sizeof(request));
         char buf[BUFSZ];
         memset(buf, 0, BUFSZ);
-        size_t count = recv(csock, buf, BUFSZ - 1, 0);
-        printf("[msg] %s, %d bytes: %s\n", caddrstr, (int)count, buf);
+        size_t count = recv(csock, &request, BUFSZ - 1, 0);
 
-        sprintf(buf, "remote endpoint: %.1000s\n", caddrstr);
-        count = send(csock, buf, strlen(buf)+1, 0);
-        if (count != strlen(buf)+1){
-            logexit("send");
-        }
+        //Não deu tempo de implementar o restante da lógica, encerrando depois do teste de conexão.
+        printf("\nConexão bem-sucedida. Encerrando por aqui.\n");
         close(csock);
+        exit(EXIT_SUCCESS);
     }
     exit(EXIT_SUCCESS);
 }
